@@ -12,8 +12,7 @@ if (!Object.keys(process.env).length) {
 // Setup env variables
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-/// TODO: Hack
-let chainId = 31337;
+let chainId = process.env.CHAIN_ID!;
 
 const avsDeploymentData = JSON.parse(fs.readFileSync(path.resolve(__dirname, `../contracts/deployments/hello-world/${chainId}.json`), 'utf8'));
 // Load core deployment data
@@ -133,9 +132,7 @@ const monitorNewTasks = async () => {
 
 const main = async () => {
     await registerOperator();
-    monitorNewTasks().catch((error) => {
-        console.error("Error monitoring tasks:", error);
-    });
+    
 };
 
 main().catch((error) => {
