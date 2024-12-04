@@ -23,7 +23,10 @@ const delegationManagerAddress = coreDeploymentData.addresses.delegation; // tod
 const avsDirectoryAddress = coreDeploymentData.addresses.avsDirectory;
 const helloWorldServiceManagerAddress = avsDeploymentData.addresses.helloWorldServiceManager;
 const ecdsaStakeRegistryAddress = avsDeploymentData.addresses.stakeRegistry;
-
+console.log("ecdsaStakeRegistryAddress", ecdsaStakeRegistryAddress);
+console.log("delegationManagerAddress", delegationManagerAddress);
+console.log("avsDirectoryAddress", avsDirectoryAddress);
+console.log("helloWorldServiceManagerAddress", helloWorldServiceManagerAddress);
 
 
 // Load ABIs
@@ -65,6 +68,7 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
 
 const registerOperator = async () => {
     const isOperator = await delegationManager.isOperator(await wallet.address);
+    console.log("isOperator", isOperator);
     if (!isOperator) {
             // Registers as an Operator in EigenLayer.
         try {
@@ -119,7 +123,8 @@ const registerOperator = async () => {
         operatorSignatureWithSaltAndExpiry,
         wallet.address
     );
-    await tx2.wait();
+    const receipt = await tx2.wait();
+    console.log("receipt", receipt);
     console.log("Operator registered on AVS successfully");
 };
 
