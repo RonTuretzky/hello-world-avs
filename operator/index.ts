@@ -66,15 +66,15 @@ const submitSignature = async (message: string) => {
     const messageHash = ethers.solidityPackedKeccak256(["string"], [message]);
     const messageBytes = ethers.getBytes(messageHash);
     const signature = await wallet.signMessage(messageBytes);
-
+    const blockNumber = await provider.getBlockNumber();
     const operators = [await wallet.getAddress()];
     const signatures = [signature];
-    const signedTask = ethers.AbiCoder.defaultAbiCoder().encode(
+    const signatureData = ethers.AbiCoder.defaultAbiCoder().encode(
         ["address[]", "bytes[]", "uint32"],
         [operators, signatures, ethers.toBigInt(await provider.getBlockNumber()-1)]
     );
 
-    const tx = await ecdsaRegistryContract.isValidSignature(messageHash, signature);
+    const tx = await ecdsaRegistryContract.isValidSignature(messageHash, signatureData);
     await tx.wait();
 };
 
