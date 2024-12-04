@@ -64,18 +64,23 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
 };
 
 const registerOperator = async () => {
-    
-    // Registers as an Operator in EigenLayer.
-    try {
-        const tx1 = await delegationManager.registerAsOperator({
-            __deprecated_earningsReceiver: await wallet.address,
-            delegationApprover: "0x0000000000000000000000000000000000000000",
-            stakerOptOutWindowBlocks: 0
-        }, "");
-        await tx1.wait();
-        console.log("Operator registered to Core EigenLayer contracts");
-    } catch (error) {
-        console.error("Error in registering as operator:", error);
+    const isOperator = await delegationManager.isOperator(await wallet.address);
+    if (!isOperator) {
+            // Registers as an Operator in EigenLayer.
+        try {
+            const tx1 = await delegationManager.registerAsOperator({
+                __deprecated_earningsReceiver: await wallet.address,
+                delegationApprover: "0x0000000000000000000000000000000000000000",
+                stakerOptOutWindowBlocks: 0
+            }, "");
+            await tx1.wait();
+            console.log("Operator registered to Core EigenLayer contracts");
+        } catch (error) {
+            console.error("Error in registering as operator:", error);
+        }
+
+    } else {
+        console.log("Operator already registered, skipping registration");
     }
     
     const salt = ethers.hexlify(ethers.randomBytes(32));
