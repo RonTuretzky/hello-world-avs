@@ -153,8 +153,8 @@ const monitorNewTasks = async () => {
 
 const main = async () => {
     await registerOperator();
-    // await submitSignature("Hello World");
-    await monitorNewTasks();
+    await submitSignature("Hello World");
+    // await monitorNewTasks();
 };
 
 main().catch((error) => {
