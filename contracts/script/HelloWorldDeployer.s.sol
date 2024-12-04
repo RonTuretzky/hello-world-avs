@@ -43,6 +43,9 @@ contract HelloWorldDeployer is Script {
         quorum.strategies.push(
             StrategyParams({strategy: helloWorldStrategy, multiplier: 10_000})
         );
+        console2.log("Token address:", address(token));
+        console2.log("Strategy address:", address(helloWorldStrategy));
+
     }
 
     function run() external {
