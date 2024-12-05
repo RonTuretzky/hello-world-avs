@@ -60,8 +60,8 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
     // );
     console.log(signedTask);
     console.log(messageHash);
-    // const tx = await ecdsaRegistryContract.isValidSignature(messageHash, signedTask);
-    // await tx.wait();
+    const tx = await ecdsaRegistryContract.isValidSignature(messageHash, signedTask);
+    await tx.wait();
     console.log(`Responded to task.`);
 };
 
