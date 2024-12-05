@@ -58,8 +58,10 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
     //     taskIndex,
     //     signedTask
     // );
-    const tx = await ecdsaRegistryContract.isValidSignature(messageHash, signedTask);
-    await tx.wait();
+    console.log(signedTask);
+    console.log(messageHash);
+    // const tx = await ecdsaRegistryContract.isValidSignature(messageHash, signedTask);
+    // await tx.wait();
     console.log(`Responded to task.`);
 };
 
@@ -153,7 +155,7 @@ const monitorNewTasks = async () => {
 
 const main = async () => {
     await registerOperator();
-    await submitSignature("Hello World");
+    await signAndRespondToTask(0, 0, "Hello World");
     // await monitorNewTasks();
 };
 
