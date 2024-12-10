@@ -40,12 +40,11 @@ const avsDirectory = new ethers.Contract(avsDirectoryAddress, avsDirectoryABI, w
 
 const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number, taskName: string) => {
     const message = "Hello World";
-    // const messageHash = ethers.solidityPackedKeccak256(["string"], [message]);
-    // const messageBytes = ethers.getBytes(messageHash);
-    // const ethMessageBytes = ethers.hashMessage(messageBytes);
-    const ethMessageBytes = ethers.hashMessage(message);
-    // const signature = await wallet.signMessage(messageBytes);
-    const signature = await wallet.signMessage(message);
+    const messageHash = ethers.solidityPackedKeccak256(["string"], [message]);
+    const eip191prefix= "\x19Ethereum Signed Message:\n32";
+    const ethMessageHash = ethers.solidityPackedKeccak256(["string",'bytes32'], [eip191prefix, messageHash]);
+    console.log("ethMessageHash: ", ethMessageHash);
+    const signature = await wallet.signMessage(ethMessageHash);
     const walletAddress = await wallet.getAddress();
     const operators = [walletAddress];
     const signatures = [signature];
@@ -60,10 +59,9 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
     
     console.log("signature encoded data: ", signedTask);
     // console.log("regular messageHash: ", messageHash);
-    console.log("ethMessageBytes: ", ethMessageBytes);
     console.log("signature data: ", signature);
     // console.log("stringSignature: ", stringSignature);
-    const tx = await ecdsaRegistryContract.isValidSignature(ethMessageBytes, signedTask);
+    const tx = await ecdsaRegistryContract.isValidSignature(ethMessageHash, signedTask);
     await tx.wait();
     console.log(`Responded to task.`);
 };
@@ -157,7 +155,7 @@ const monitorNewTasks = async () => {
 };
 
 const main = async () => {
-    await registerOperator();
+    // await registerOperator();
     await signAndRespondToTask(0, 0, "Hello World");
     // await monitorNewTasks();
 };
