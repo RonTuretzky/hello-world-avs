@@ -28,7 +28,7 @@ use once_cell::sync::Lazy;
 use rand::RngCore;
 use std::{env, str::FromStr};
 
-pub const ANVIL_RPC_URL: &str = "http://localhost:8545";
+pub const ANVIL_RPC_URL: &str = "http://ethereum:8545";
 
 static KEY: Lazy<String> =
     Lazy::new(|| env::var("PRIVATE_KEY").expect("failed to retrieve private key"));
@@ -42,6 +42,55 @@ async fn sign_and_response_to_task(
     let signer = PrivateKeySigner::from_str(&KEY.clone())?;
 
     let message = format!("Hello, {}", name);
+    let m_hash = eip191_hash_message(keccak256(message.abi_encode_packed()));
+    let operators: Vec<DynSolValue> = vec![DynSolValue::Address(signer.address())];
+    let signature: Vec<DynSolValue> =
+        vec![DynSolValue::Bytes(signer.sign_hash_sync(&m_hash)?.into())];
+    let current_block = U256::from(get_provider(ANVIL_RPC_URL).get_block_number().await?);
+    let signature_data = DynSolValue::Tuple(vec![
+        DynSolValue::Array(operators.clone()),
+        DynSolValue::Array(signature.clone()),
+        DynSolValue::Uint(current_block, 32),
+    ])
+    .abi_encode_params();
+
+    get_logger().info(
+        &format!("Signing and responding to task : {:?}", task_index),
+        "",
+    );
+    let hello_world_contract_address: Address =
+        parse_hello_world_service_manager("contracts/deployments/hello-world/17000.json")?;
+    let hello_world_contract = HelloWorldServiceManager::new(hello_world_contract_address, &pr);
+
+    let response_hash = hello_world_contract
+        .respondToTask(
+            Task {
+                name,
+                taskCreatedBlock: task_created_block,
+            },
+            task_index,
+            signature_data.into(),
+        )
+        .gas(500000)
+        .send()
+        .await?
+        .get_receipt()
+        .await?
+        .transaction_hash;
+    get_logger().info(
+        &format!("Responded to task with tx hash {}", response_hash),
+        "",
+    );
+    Ok(())
+}
+
+
+async fn validate_signature(
+    message: String,
+) -> Result<()> {
+    let pr = get_signer(&KEY.clone(), ANVIL_RPC_URL);
+    let signer = PrivateKeySigner::from_str(&KEY.clone())?;
+
     let m_hash = eip191_hash_message(keccak256(message.abi_encode_packed()));
     let operators: Vec<DynSolValue> = vec![DynSolValue::Address(signer.address())];
     let signature: Vec<DynSolValue> =
