@@ -49,21 +49,18 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
     const operators = [walletAddress];
     const signatures = [signature];
     const blockNumber = await provider.getBlockNumber() - 1;
-    console.log(walletAddress); 
-    console.log(blockNumber);
-    console.log(signature);
+    console.log("walletAddress: ", walletAddress); 
+    console.log("blockNumber: ", blockNumber);
+    console.log("signature: ", signature);
     const signedTask = ethers.AbiCoder.defaultAbiCoder().encode(
         ["address[]", "bytes[]", "uint32"],
         [operators, signatures, blockNumber]
     );
 
-    // const tx = await helloWorldServiceManager.respondToTask(
-    //     { name: taskName, taskCreatedBlock: taskCreatedBlock },
-    //     taskIndex,
-    //     signedTask
-    // );
-    console.log(signedTask);
-    console.log(messageHash);
+    console.log("signature encoded data: ", signedTask);
+    console.log("regular messageHash: ", messageHash);
+    console.log("ethMessageBytes: ", ethMessageBytes);
+    console.log("signature data: ", signature);
     const tx = await ecdsaRegistryContract.isValidSignature(ethMessageBytes, signedTask);
     await tx.wait();
     console.log(`Responded to task.`);
