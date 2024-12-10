@@ -200,7 +200,7 @@ async fn register_operator() -> Result<()> {
         expiry: expiry,
     };
     let stake_registry_address =
-        parse_stake_registry_address("contracts/deployments/hello-world/31337.json")?;
+        parse_stake_registry_address("contracts/deployments/hello-world/17000.json")?;
     let contract_ecdsa_stake_registry = ECDSAStakeRegistry::new(stake_registry_address, &pr);
     let registeroperator_details_call: alloy::contract::CallBuilder<
         _,
@@ -231,7 +231,7 @@ async fn register_operator() -> Result<()> {
 
 #[tokio::main]
 pub async fn main() {
-    use tokio::signal;
+    // use tokio::signal;
     dotenv().ok();
     init_logger(LogLevel::Info);
     if let Err(e) = register_operator().await {
@@ -239,14 +239,14 @@ pub async fn main() {
         return;
     }
 
-    // Start the task monitoring as a separate async task to keep the process running
-    tokio::spawn(async {
-        if let Err(e) = monitor_new_tasks().await {
-            eprintln!("Failed to monitor new tasks: {:?}", e);
-        }
-    });
+    // // Start the task monitoring as a separate async task to keep the process running
+    // tokio::spawn(async {
+    //     if let Err(e) = monitor_new_tasks().await {
+    //         eprintln!("Failed to monitor new tasks: {:?}", e);
+    //     }
+    // });
 
-    // Wait for a Ctrl+C signal to gracefully shut down
-    let _ = signal::ctrl_c().await;
-    get_logger().info("Received Ctrl+C, shutting down...", "");
+    // // Wait for a Ctrl+C signal to gracefully shut down
+    // let _ = signal::ctrl_c().await;
+    // get_logger().info("Received Ctrl+C, shutting down...", "");
 }
