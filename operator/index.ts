@@ -42,15 +42,19 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
     const message = "Hello World";
     const messageHash = ethers.solidityPackedKeccak256(["string"], [message]);
     const messageBytes = ethers.getBytes(messageHash);
+    const ethMessageBytes = ethers.hashMessage(messageBytes);
     const signature = await wallet.signMessage(messageBytes);
 
-    console.log(`Signing and responding to task ${taskIndex}`);
-
-    const operators = [await wallet.getAddress()];
+    const walletAddress = await wallet.getAddress();
+    const operators = [walletAddress];
     const signatures = [signature];
+    const blockNumber = await provider.getBlockNumber() - 1;
+    console.log(walletAddress); 
+    console.log(blockNumber);
+    console.log(signature);
     const signedTask = ethers.AbiCoder.defaultAbiCoder().encode(
         ["address[]", "bytes[]", "uint32"],
-        [operators, signatures, ethers.toBigInt(await provider.getBlockNumber()-1)]
+        [operators, signatures, blockNumber]
     );
 
     // const tx = await helloWorldServiceManager.respondToTask(
@@ -60,7 +64,7 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
     // );
     console.log(signedTask);
     console.log(messageHash);
-    const tx = await ecdsaRegistryContract.isValidSignature(messageHash, signedTask);
+    const tx = await ecdsaRegistryContract.isValidSignature(ethMessageBytes, signedTask);
     await tx.wait();
     console.log(`Responded to task.`);
 };
