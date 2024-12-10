@@ -59,7 +59,7 @@ async fn sign_and_response_to_task(
         "",
     );
     let hello_world_contract_address: Address =
-        parse_hello_world_service_manager("contracts/deployments/hello-world/31337.json")?;
+        parse_hello_world_service_manager("contracts/deployments/hello-world/17000.json")?;
     let hello_world_contract = HelloWorldServiceManager::new(hello_world_contract_address, &pr);
 
     let response_hash = hello_world_contract
@@ -88,7 +88,7 @@ async fn sign_and_response_to_task(
 async fn monitor_new_tasks() -> Result<()> {
     let pr = get_signer(&KEY.clone(), ANVIL_RPC_URL);
     let hello_world_contract_address: Address =
-        parse_hello_world_service_manager("contracts/deployments/hello-world/31337.json")?;
+        parse_hello_world_service_manager("contracts/deployments/hello-world/17000.json")?;
     let mut latest_processed_block = pr.get_block_number().await?;
 
     loop {
@@ -130,7 +130,7 @@ async fn register_operator() -> Result<()> {
     let default_slasher = Address::ZERO; // We don't need slasher for our example.
     let default_strategy = Address::ZERO; // We don't need strategy for our example.
 
-    let data = std::fs::read_to_string("contracts/deployments/core/31337.json")?;
+    let data = std::fs::read_to_string("contracts/deployments/core/17000.json")?;
     let el_parsed: EigenLayerData = serde_json::from_str(&data)?;
     let delegation_manager_address: Address = el_parsed.addresses.delegation.parse()?;
     let avs_directory_address: Address = el_parsed.addresses.avs_directory.parse()?;
@@ -183,7 +183,7 @@ async fn register_operator() -> Result<()> {
     let expiry: U256 = U256::from(now + 3600);
 
     let hello_world_contract_address: Address =
-        parse_hello_world_service_manager("contracts/deployments/hello-world/31337.json")?;
+        parse_hello_world_service_manager("contracts/deployments/hello-world/17000.json")?;
     let digest_hash = elcontracts_reader_instance
         .calculate_operator_avs_registration_digest_hash(
             signer.address(),
