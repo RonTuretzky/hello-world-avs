@@ -41,9 +41,9 @@ const avsDirectory = new ethers.Contract(avsDirectoryAddress, avsDirectoryABI, w
 const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number, taskName: string) => {
     const message = "Hello World";
     const messageHash = ethers.solidityPackedKeccak256(["string"], [message]);
-    // const eip191prefix= "\x19Ethereum Signed Message:\n32";
-    // const ethMessageHash = ethers.solidityPackedKeccak256(["string",'bytes32'], [eip191prefix, messageHash]);
-    // console.log("ethMessageHash: ", ethMessageHash);
+    const eip191prefix= "\x19Ethereum Signed Message:\n32";
+    const ethMessageHash1 = ethers.solidityPackedKeccak256(["string",'bytes32'], [eip191prefix, messageHash]);
+    console.log("ethMessageHash1: ", ethMessageHash1);
     const ethMessageHash = ethers.hashMessage(message);
     const signature = await wallet.signMessage(ethMessageHash);
     const walletAddress = await wallet.getAddress();
