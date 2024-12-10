@@ -44,7 +44,7 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
     const messageBytes = ethers.getBytes(messageHash);
     const ethMessageBytes = ethers.hashMessage(messageBytes);
     const signature = await wallet.signMessage(messageBytes);
-
+    const stringSignature = await wallet.signMessage(message);
     const walletAddress = await wallet.getAddress();
     const operators = [walletAddress];
     const signatures = [signature];
@@ -56,11 +56,12 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
         ["address[]", "bytes[]", "uint32"],
         [operators, signatures, blockNumber]
     );
-
+    
     console.log("signature encoded data: ", signedTask);
     console.log("regular messageHash: ", messageHash);
     console.log("ethMessageBytes: ", ethMessageBytes);
     console.log("signature data: ", signature);
+    console.log("stringSignature: ", stringSignature);
     const tx = await ecdsaRegistryContract.isValidSignature(ethMessageBytes, signedTask);
     await tx.wait();
     console.log(`Responded to task.`);
